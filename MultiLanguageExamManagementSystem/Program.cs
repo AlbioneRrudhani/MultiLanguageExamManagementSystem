@@ -1,14 +1,11 @@
 using AutoMapper;
 using LifeEcommerce.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Options;
 using MultiLanguageExamManagementSystem.Data;
 using MultiLanguageExamManagementSystem.Data.UnitOfWork;
 using MultiLanguageExamManagementSystem.Services.IServices;
 using MultiLanguageExamManagementSystem.Services;
 using Serilog;
-using Microsoft.AspNetCore.Hosting;
 using MultiLanguageExamManagementSystem.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -51,7 +48,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseMiddleware<CultureMiddleware>();
+app.UseMiddleware<CultureMiddleware>();
 
 app.UseAuthorization();
 

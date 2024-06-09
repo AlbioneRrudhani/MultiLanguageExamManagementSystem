@@ -1,5 +1,4 @@
 ﻿using LifeEcommerce.Helpers;
-using Microsoft.Extensions.Localization;
 using MultiLanguageExamManagementSystem.Models.Dtos.Language;
 using MultiLanguageExamManagementSystem.Models.Dtos.LocalizationResource;
 //using MultiLanguageExamManagementSystem.Models.Dtos;
@@ -8,7 +7,14 @@ namespace MultiLanguageExamManagementSystem.Services.IServices
 {
     public interface ICultureService
     {
-       
+
+
+        #region String Localization
+        LocalizationResourceDto this[string namespaceKey] { get; }
+        LocalizationResourceDto GetString(string namespaceKey);
+        #endregion
+
+
         #region Languages
         Task<List<LanguageDto>> GetAllLanguages();
         Task<LanguageDto> GetLanguage(int id);
@@ -19,6 +25,7 @@ namespace MultiLanguageExamManagementSystem.Services.IServices
 
 
         #region Localization Resources
+        Task<LocalizationResourceDto> GetLocalizationResource(string ns, string key, string languageCode);
         Task<List<LocalizationResourceDto>> GetAllLocalizationResource();
         Task<PagedInfo<LocalizationResourceDto>> LocalizationResourcesListView(string search, int page = 1, int pageSize = 10);
         Task UpdateLocalizationResource(LocalizationResourceDto resourceToUpdate);

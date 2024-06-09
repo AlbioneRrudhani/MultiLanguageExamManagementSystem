@@ -1,13 +1,9 @@
 ﻿using AutoMapper;
 using LifeEcommerce.Helpers;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using MultiLanguageExamManagementSystem.Data.UnitOfWork;
 using MultiLanguageExamManagementSystem.Models.Dtos.Language;
 using MultiLanguageExamManagementSystem.Models.Dtos.LocalizationResource;
-
-
-//using MultiLanguageExamManagementSystem.Models.Dtos;
 using MultiLanguageExamManagementSystem.Models.Entities;
 using MultiLanguageExamManagementSystem.Services.IServices;
 using System.Globalization;
@@ -25,11 +21,33 @@ namespace MultiLanguageExamManagementSystem.Services
             _mapper = mapper;
         }
 
-        // Your code here
 
         #region String Localization
 
-        // String localization methods implementation here
+        public LocalizationResourceDto this[string namespaceKey]
+        {
+            get
+            {
+                string[] parts = namespaceKey.Split('.');
+                string ns = parts[0];
+                string key = parts[1];
+
+                var resource = GetLocalizationResource(ns, key, CultureInfo.CurrentCulture.Name).Result;
+                return resource;
+            }
+        }
+
+
+        public LocalizationResourceDto GetString(string namespaceKey)
+        {
+            string[] parts = namespaceKey.Split('.');
+            string ns = parts[0];
+            string key = parts[1];
+
+            var resource = GetLocalizationResource(ns, key, CultureInfo.CurrentCulture.Name).Result;
+            return resource;
+        }
+
 
         #endregion
 
@@ -90,6 +108,24 @@ namespace MultiLanguageExamManagementSystem.Services
 
 
         #region Localization Resources
+
+        public async Task<LocalizationResourceDto> GetLocalizationResource(string ns, string key, string languageCode)
+        {
+            var language = await _unitOfWork.Repository<Language>().GetByCondition(lang => lang.LanguageCode == languageCode).FirstOrDefaultAsync();
+
+            if (language == null)
+            {
+                return null;
+            }
+
+            var localizationResource = await _unitOfWork.Repository<LocalizationResource>()
+                .GetByCondition(lr => lr.Namespace == ns && lr.Key == key && lr.LanguageId == language.Id)
+                .FirstOrDefaultAsync();
+
+            var localizationResourceDto = _mapper.Map<LocalizationResourceDto>(localizationResource);
+            return localizationResourceDto;
+        }
+
 
         public async Task<List<LocalizationResourceDto>> GetAllLocalizationResource()
         {

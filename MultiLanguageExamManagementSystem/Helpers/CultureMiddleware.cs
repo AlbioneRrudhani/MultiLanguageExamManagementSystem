@@ -13,10 +13,26 @@ namespace MultiLanguageExamManagementSystem.Helpers
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // Your code here
+            string acceptLanguageHeader = context.Request.Headers["Accept-Language"];
+            string primaryLanguageCode = GetPrimaryLanguageCode(acceptLanguageHeader);
 
-            // read the accept language header and set the current culture based on it 
+            CultureInfo.CurrentCulture = CultureInfo.CurrentUICulture = new CultureInfo(primaryLanguageCode);
+            await _next(context);
         }
+
+        private string GetPrimaryLanguageCode(string acceptLanguageHeader)
+        {
+            if (string.IsNullOrWhiteSpace(acceptLanguageHeader))
+            {
+                return "en-US";
+            }
+
+            string[] languagePreferences = acceptLanguageHeader.Split(',');
+            string primaryLanguage = languagePreferences.FirstOrDefault()?.Split(';')[0].Trim();
+
+            return primaryLanguage ?? "en-US";
+        }
+
     }
 
 }

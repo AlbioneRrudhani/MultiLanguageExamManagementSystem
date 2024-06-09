@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Localization;
 using MultiLanguageExamManagementSystem.Models.Dtos.Language;
 using MultiLanguageExamManagementSystem.Models.Dtos.LocalizationResource;
 using MultiLanguageExamManagementSystem.Services.IServices;
@@ -25,18 +24,25 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
 
         [HttpGet(Name = "GetLocalizationResource")]
-        public async Task<IActionResult> GetLocalizationResource()
+        public IActionResult GetLocalizationResource()
         {
+            #region requirement
             // implement the logic that allows us to call the culture service like this, note that the string we are 
             // sending "ne.1" it is of form namespace.key, in this case "ne" is the namespace and "1" is the key
             // so you should return back the localization resource that is having this namespace and key and the
             // language code based in the request header
+            #endregion
 
-            //  var message = _cultureService["ne.1"];
-            //var message = _cultureService.GetString("ne.1").Value; // Implement this too
+            var message = _cultureService["buttons.start_exam"];
+            // var message = _cultureService.GetString("buttons.start_exam").Value;
 
-            return Ok();
+            if (message == null)
+            {
+                return NotFound("No localization resource found for the specified language and mamespace.key.");
+            }
+            return Ok(message);
         }
+
 
         [HttpGet("localizationResources")]
         public async Task<IActionResult> GetAllLocalizationResources()
