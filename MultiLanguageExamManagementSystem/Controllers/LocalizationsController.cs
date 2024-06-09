@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using MultiLanguageExamManagementSystem.Models.Dtos.Language;
 using MultiLanguageExamManagementSystem.Services.IServices;
 
 namespace MultiLanguageExamManagementSystem.Controllers
@@ -32,6 +33,63 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
           return Ok();
         }
+
+
+        #region Languages
+
+
+        [HttpGet("languages/{id}")]
+        public async Task<IActionResult> GetLanguageById(int id)
+        {
+            var language = await _cultureService.GetLanguage(id);
+            if (language == null)
+            {
+                return NotFound("Language not found.");
+            }
+            return Ok(language);
+        }
+
+
+        [HttpGet("languages")]
+        public async Task<IActionResult> GetAllLanguages()
+        {
+            var languages = await _cultureService.GetAllLanguages();
+            return Ok(languages);
+        }
+
+
+        [HttpGet("languagesListView")]
+        public async Task<IActionResult> LanguagesListView(string? searchText, int page = 1, int pageSize = 10)
+        {
+            var languages = await _cultureService.LanguagesListView(searchText, page, pageSize);
+            return Ok(languages);
+        }
+
+
+        [HttpPut("language")]
+        public async Task<IActionResult> UpdateLanguage(LanguageDto languageToUpdate)
+        {
+            await _cultureService.UpdateLanguage(languageToUpdate);
+            return Ok("Language updated successfully.");
+        }
+
+
+        [HttpDelete("language/{id}")]
+        public async Task<IActionResult> DeleteLanguage(int id)
+        {
+            await _cultureService.DeleteLanguage(id);
+            return Ok("Language deleted successfully.");
+        }
+
+        #endregion
+
+
+
+
+
+
+
+
 
         // Your code here
         // Implement endpoints for crud operations (no relation to localization needed here, just normal cruds)
