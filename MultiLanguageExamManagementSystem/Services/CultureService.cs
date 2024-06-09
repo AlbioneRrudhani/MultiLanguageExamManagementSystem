@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using MultiLanguageExamManagementSystem.Data.UnitOfWork;
 using MultiLanguageExamManagementSystem.Models.Dtos.Language;
+using MultiLanguageExamManagementSystem.Models.Dtos.LocalizationResource;
+
 
 //using MultiLanguageExamManagementSystem.Models.Dtos;
 using MultiLanguageExamManagementSystem.Models.Entities;
@@ -89,7 +91,47 @@ namespace MultiLanguageExamManagementSystem.Services
 
         #region Localization Resources
 
-        // localization resource methods implementation here
+        public async Task<List<LocalizationResourceDto>> GetAllLocalizationResource()
+        {
+            var localizationResources = await _unitOfWork.Repository<LocalizationResource>().GetAll().ToListAsync();
+            return _mapper.Map<List<LocalizationResourceDto>>(localizationResources);
+        }
+
+
+        public async Task<PagedInfo<LocalizationResourceDto>> LocalizationResourcesListView(string search, int page = 1, int pageSize = 10)
+        {
+            var localizationResources = _unitOfWork.Repository<LocalizationResource>()
+                                        .GetAll()
+                                        .WhereIf(!string.IsNullOrEmpty(search), x => x.Key.Contains(search));
+
+            var count = await localizationResources.CountAsync();
+            var items = _mapper.Map<List<LocalizationResourceDto>>(await localizationResources.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync());
+
+            var resourcesPaged = new PagedInfo<LocalizationResourceDto>()
+            {
+                TotalCount = count,
+                Page = page,
+                PageSize = pageSize,
+                Items = items
+            };
+            return resourcesPaged;
+        }
+
+
+        public async Task UpdateLocalizationResource(LocalizationResourceDto resourceToUpdate)
+        {
+            var existingResource = await _unitOfWork.Repository<LocalizationResource>().GetById(x => x.Id == resourceToUpdate.Id).FirstOrDefaultAsync();
+            _mapper.Map(resourceToUpdate, existingResource);
+            _unitOfWork.Repository<LocalizationResource>().Update(existingResource);
+            _unitOfWork.Complete();
+        }
+
+        public async Task DeleteLocalizationResource(int id)
+        {
+            var localizationResourceToDelete = await _unitOfWork.Repository<Language>().GetById(x => x.Id == id).FirstOrDefaultAsync();
+            _unitOfWork.Repository<Language>().Delete(localizationResourceToDelete);
+            _unitOfWork.Complete();
+        }
 
         #endregion
     }

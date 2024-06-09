@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using MultiLanguageExamManagementSystem.Models.Dtos.Language;
+using MultiLanguageExamManagementSystem.Models.Dtos.LocalizationResource;
 using MultiLanguageExamManagementSystem.Services.IServices;
 
 namespace MultiLanguageExamManagementSystem.Controllers
@@ -18,7 +19,10 @@ namespace MultiLanguageExamManagementSystem.Controllers
             _cultureService = cultureService;
         }
 
-        // Your code here
+
+
+        #region Localization resources
+
 
         [HttpGet(Name = "GetLocalizationResource")]
         public async Task<IActionResult> GetLocalizationResource()
@@ -28,11 +32,44 @@ namespace MultiLanguageExamManagementSystem.Controllers
             // so you should return back the localization resource that is having this namespace and key and the
             // language code based in the request header
 
-          //  var message = _cultureService["ne.1"];
+            //  var message = _cultureService["ne.1"];
             //var message = _cultureService.GetString("ne.1").Value; // Implement this too
 
-          return Ok();
+            return Ok();
         }
+
+        [HttpGet("localizationResources")]
+        public async Task<IActionResult> GetAllLocalizationResources()
+        {
+            var languages = await _cultureService.GetAllLocalizationResource();
+            return Ok(languages);
+        }
+
+
+        [HttpGet("localizationResourcesListView")]
+        public async Task<IActionResult> LocalizationResourcesListView(string? searchText, int page = 1, int pageSize = 10)
+        {
+            var localizationResources = await _cultureService.LocalizationResourcesListView(searchText, page, pageSize);
+            return Ok(localizationResources);
+        }
+
+
+        [HttpPut("localization-resource")]
+        public async Task<IActionResult> UpdateLocalizationResource(LocalizationResourceDto localizationResourceToUpdate)
+        {
+            await _cultureService.UpdateLocalizationResource(localizationResourceToUpdate);
+            return Ok("Localization resource updated successfully.");
+        }
+
+
+        [HttpDelete("localization-resource/{id}")]
+        public async Task<IActionResult> DeleteLocalizationResource(int id)
+        {
+            await _cultureService.DeleteLocalizationResource(id);
+            return Ok("Localization resource deleted successfully.");
+        }
+
+        #endregion
 
 
         #region Languages
