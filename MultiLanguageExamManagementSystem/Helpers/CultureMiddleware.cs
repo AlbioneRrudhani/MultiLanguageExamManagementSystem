@@ -24,13 +24,13 @@ namespace MultiLanguageExamManagementSystem.Helpers
         {
             if (string.IsNullOrWhiteSpace(acceptLanguageHeader))
             {
-                return "en-US";
+                return "en-US"; 
             }
 
             string[] languagePreferences = acceptLanguageHeader.Split(',');
             string primaryLanguage = languagePreferences.FirstOrDefault()?.Split(';')[0].Trim();
 
-            return primaryLanguage ?? "en-US";
+            return primaryLanguage ?? "en-US"; 
         }
 
     }

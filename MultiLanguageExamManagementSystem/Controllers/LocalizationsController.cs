@@ -19,8 +19,16 @@ namespace MultiLanguageExamManagementSystem.Controllers
         }
 
 
-
         #region Localization resources
+
+
+        [HttpPost("localization-resource")]
+        public async Task<IActionResult> AddLocalizationResource(CreateLocalizationResourceDto resourceToCreate)
+        {
+            await _cultureService.CreateLocalizationResource(resourceToCreate);
+            return Ok("Localization resource added and translated successfully.");
+        }
+
 
 
         [HttpGet(Name = "GetLocalizationResource")]
@@ -47,8 +55,8 @@ namespace MultiLanguageExamManagementSystem.Controllers
         [HttpGet("localizationResources")]
         public async Task<IActionResult> GetAllLocalizationResources()
         {
-            var languages = await _cultureService.GetAllLocalizationResource();
-            return Ok(languages);
+                var languages = await _cultureService.GetAllLocalizationResource();
+                return Ok(languages);
         }
 
 
@@ -80,6 +88,13 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
         #region Languages
 
+        [HttpPost("languages")]
+        public async Task<IActionResult> AddLanguage(CreateLanguageDto languageToCreate)
+        {
+            await _cultureService.CreateLanguage(languageToCreate);
+            return Ok("Language added and resources translated successfully.");
+        }
+
 
         [HttpGet("languages/{id}")]
         public async Task<IActionResult> GetLanguageById(int id)
@@ -96,8 +111,8 @@ namespace MultiLanguageExamManagementSystem.Controllers
         [HttpGet("languages")]
         public async Task<IActionResult> GetAllLanguages()
         {
-            var languages = await _cultureService.GetAllLanguages();
-            return Ok(languages);
+                var languages = await _cultureService.GetAllLanguages();
+                return Ok(languages);
         }
 
 
@@ -120,21 +135,13 @@ namespace MultiLanguageExamManagementSystem.Controllers
         [HttpDelete("language/{id}")]
         public async Task<IActionResult> DeleteLanguage(int id)
         {
-            await _cultureService.DeleteLanguage(id);
+            await _cultureService.DeleteLanguage(id); 
             return Ok("Language deleted successfully.");
         }
-
         #endregion
 
 
-
-
-
-
-
-
-
-        // Your code here
+        #region requirements
         // Implement endpoints for crud operations (no relation to localization needed here, just normal cruds)
         // Except when adding a new language(or localization resource), you should get all the existing localization resources in english
         // prepare and translate them to the new language using translation service which should use this api for translations:
@@ -143,5 +150,6 @@ namespace MultiLanguageExamManagementSystem.Controllers
         // same applies when adding a new localization resource, for example you implement the code for adding a new
         // language resource, then you call the api to prepare the translated resource to all your existing languages
         // and then you add the same resource for all the languages
+        #endregion
     }
 }

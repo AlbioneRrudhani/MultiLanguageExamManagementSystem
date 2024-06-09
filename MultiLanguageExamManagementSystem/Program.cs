@@ -20,8 +20,15 @@ builder.Services.AddSingleton(mapper);
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
+// Register HttpClient
+builder.Services.AddHttpClient<TranslationService>(); 
+
 //builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<ICultureService, CultureService>();
+builder.Services.AddScoped<ITranslationService, TranslationService>();
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

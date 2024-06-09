@@ -14,11 +14,13 @@ namespace MultiLanguageExamManagementSystem.Services
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly ITranslationService _translationService;
 
-        public CultureService(IUnitOfWork unitOfWork, IMapper mapper)
+        public CultureService(IUnitOfWork unitOfWork, IMapper mapper, ITranslationService translationService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _translationService = translationService;
         }
 
 
@@ -48,11 +50,36 @@ namespace MultiLanguageExamManagementSystem.Services
             return resource;
         }
 
-
         #endregion
 
 
         #region Languages
+
+        public async Task CreateLanguage(CreateLanguageDto languageToCreate)
+        {
+            var newLanguage = _mapper.Map<Language>(languageToCreate);
+            _unitOfWork.Repository<Language>().Create(newLanguage);
+            _unitOfWork.Complete();
+
+            var existingResources = await _unitOfWork.Repository<LocalizationResource>()
+                .GetByCondition(lr => lr.LanguageId == 1).ToListAsync();
+
+            foreach (var resource in existingResources)
+            {
+                var translatedText = await _translationService.TranslateText(resource.Value, newLanguage.LanguageCode);
+                var newResource = new LocalizationResource
+                {
+                    Namespace = resource.Namespace,
+                    Key = resource.Key,
+                    Value = translatedText,
+                    LanguageId = newLanguage.Id,
+                    BeautifiedNamespace = resource.BeautifiedNamespace
+                };
+                _unitOfWork.Repository<LocalizationResource>().Create(newResource);
+            }
+            _unitOfWork.Complete();
+        }
+
 
         public async Task<LanguageDto> GetLanguage(int id)
         {
@@ -108,6 +135,36 @@ namespace MultiLanguageExamManagementSystem.Services
 
 
         #region Localization Resources
+
+        public async Task CreateLocalizationResource(CreateLocalizationResourceDto resourceToCreate)
+        {
+            var newResource = _mapper.Map<LocalizationResource>(resourceToCreate);
+            _unitOfWork.Repository<LocalizationResource>().Create(newResource);
+            _unitOfWork.Complete();
+
+            var existingLanguages = await _unitOfWork.Repository<Language>().GetAll().ToListAsync();
+
+            foreach (var language in existingLanguages)
+            {
+                //skip the new language itself for translation
+                if (language.Id == newResource.LanguageId)
+                    continue;
+
+                var translatedText = await _translationService.TranslateText(resourceToCreate.Value, language.LanguageCode);
+
+                var translatedResource = new LocalizationResource
+                {
+                    Namespace = resourceToCreate.Namespace,
+                    Key = resourceToCreate.Key,
+                    Value = translatedText,
+                    LanguageId = language.Id,
+                    BeautifiedNamespace = resourceToCreate.BeautifiedNamespace
+                };
+                _unitOfWork.Repository<LocalizationResource>().Create(translatedResource);
+            }
+            _unitOfWork.Complete();
+        }
+
 
         public async Task<LocalizationResourceDto> GetLocalizationResource(string ns, string key, string languageCode)
         {

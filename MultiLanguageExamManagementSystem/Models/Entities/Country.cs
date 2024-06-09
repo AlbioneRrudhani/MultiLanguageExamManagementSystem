@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace MultiLanguageExamManagementSystem.Models.Entities
-{
+{        
     public class Country
     {
         public int Id { get; set; }

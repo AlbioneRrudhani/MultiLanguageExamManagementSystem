@@ -38,6 +38,5 @@ namespace MultiLanguageExamManagementSystem.Data
                 .IsUnique();
 
         }
-
     }
 }

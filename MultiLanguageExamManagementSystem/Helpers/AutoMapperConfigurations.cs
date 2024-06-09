@@ -16,7 +16,7 @@ namespace LifeEcommerce.Helpers
 
             CreateMap<Language, CreateLanguageDto>().ReverseMap();
             CreateMap<CreateLanguageDto, Language>().ReverseMap();
-
+            
             #endregion
 
 
@@ -27,7 +27,7 @@ namespace LifeEcommerce.Helpers
 
             CreateMap<LocalizationResource, CreateLocalizationResourceDto>().ReverseMap();
             CreateMap<CreateLocalizationResourceDto, LocalizationResource>().ReverseMap();
-
+            
             #endregion
         }
     }
