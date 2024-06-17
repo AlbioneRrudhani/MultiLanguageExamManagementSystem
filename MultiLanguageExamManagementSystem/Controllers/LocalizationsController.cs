@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MultiLanguageExamManagementSystem.Models.Dtos.Language;
 using MultiLanguageExamManagementSystem.Models.Dtos.LocalizationResource;
@@ -109,6 +110,7 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
 
         [HttpGet("languages")]
+        [Authorize(Policy = "Professor")]
         public async Task<IActionResult> GetAllLanguages()
         {
                 var languages = await _cultureService.GetAllLanguages();
@@ -117,6 +119,7 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
 
         [HttpGet("languagesListView")]
+        [Authorize(Policy = "Professor")]
         public async Task<IActionResult> LanguagesListView(string? searchText, int page = 1, int pageSize = 10)
         {
             var languages = await _cultureService.LanguagesListView(searchText, page, pageSize);
