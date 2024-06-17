@@ -1,8 +1,8 @@
 ﻿namespace MultiLanguageExamManagementSystem.Models.Enum
 {
-    public enum UserRole
+    public enum RequestStatus
     {
-        Professor
+        Pending,
+        Approved
     }
-
 }

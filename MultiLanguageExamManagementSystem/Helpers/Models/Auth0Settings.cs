@@ -8,10 +8,6 @@
         public string Connection { get; set; }
         public string Audience { get; set; }
         public string SignupEndpoint { get; set; }
-        public string Authority { get; set; }
-
-        public string ManagementApiBaseUrl { get; set; }
-        public string ManagementApiToken { get; set; }
 
     }
 }

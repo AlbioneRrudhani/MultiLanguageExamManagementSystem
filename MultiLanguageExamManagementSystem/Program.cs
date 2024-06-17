@@ -7,11 +7,12 @@ using MultiLanguageExamManagementSystem.Services.IServices;
 using MultiLanguageExamManagementSystem.Services;
 using Serilog;
 using MultiLanguageExamManagementSystem.Helpers;
-using MultiLanguageExamManagementSystem.Helpers.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Security.Claims;
 using Microsoft.OpenApi.Models;
+using System.Security.Claims;
+using MultiLanguageExamManagementSystem.Helpers.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,18 +28,24 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
+
 builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth0"));
+
 
 // Register HttpClient
 builder.Services.AddHttpClient<TranslationService>(); 
 
 //builder.Services.AddScoped<IExamService, ExamService>();
+builder.Services.AddScoped<IAdminExamService, AdminExamService>();
 builder.Services.AddScoped<ICultureService, CultureService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
-
 builder.Services.AddScoped<IAuth0Service, Auth0Service>();
 
+builder.Services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
+
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 
 builder.Services.AddAuthentication(options =>
@@ -63,7 +70,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 
-
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -85,7 +91,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Enter JWT Bearer token",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
+        Scheme = "bearer", 
         BearerFormat = "JWT",
         Reference = new OpenApiReference
         {
@@ -96,6 +102,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, securityScheme);
     c.OperationFilter<AuthorizeCheckOperationFilter>();
 });
+
 
 var app = builder.Build();
 
@@ -110,7 +117,9 @@ app.UseHttpsRedirection();
 
 app.UseMiddleware<CultureMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

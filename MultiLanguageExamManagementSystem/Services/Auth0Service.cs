@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using MultiLanguageExamManagementSystem.Controllers;
 using MultiLanguageExamManagementSystem.Data.UnitOfWork;
 using MultiLanguageExamManagementSystem.Helpers.Models;
 using MultiLanguageExamManagementSystem.Models.Entities;
@@ -9,7 +8,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
-using System.Text;
 
 namespace MultiLanguageExamManagementSystem.Services
 {
@@ -62,12 +60,53 @@ namespace MultiLanguageExamManagementSystem.Services
             var response = await _httpClient.SendAsync(tokenRequest);
             var tokenResponse = await HandleResponseAsync(response, "Failed to get token");
 
+            // Extract auth0id from the token response
+            var jwtToken = JsonConvert.DeserializeObject<JObject>(tokenResponse)["access_token"].ToString();
+            var userEmail = request.Email;
+
+            await SaveUserEmailAndAuth0IdAsync(userEmail, jwtToken);
+
             return tokenResponse;
         }
 
 
 
-      
+        private async Task SaveUserEmailAndAuth0IdAsync(string email, string jwtToken)
+        {
+            var auth0Id = ExtractAuth0IdFromToken(jwtToken);
+
+            var user = await _unitOfWork.Repository<User>()
+                .GetByCondition(u => u.Email == email)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                user = new User { Email = email };
+                _unitOfWork.Repository<User>().Create(user);
+            }
+
+            user.Auth0Id = auth0Id;
+            _unitOfWork.Complete(); 
+        }
+
+
+
+        private string ExtractAuth0IdFromToken(string jwtToken)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwtToken);
+
+            var auth0IdClaim = token.Claims.FirstOrDefault(claim => claim.Type == "sub");
+
+            if (auth0IdClaim != null)
+            {
+                return auth0IdClaim.Value;
+            }
+            else
+            {
+                throw new InvalidOperationException("No 'sub' claim found in the JWT token.");
+            }
+        }
 
         private static async Task<string> HandleResponseAsync(HttpResponseMessage response, string errorMessage)
         {

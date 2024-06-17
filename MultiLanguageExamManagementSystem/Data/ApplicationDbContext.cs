@@ -13,11 +13,13 @@ namespace MultiLanguageExamManagementSystem.Data
         public DbSet<Country> Countries { get; set; }
         public DbSet<LocalizationResource> LocalizationResources { get; set; }
 
-        public DbSet<User> Users { get; set; }
-        public DbSet<Question> Questions { get; set; }
         public DbSet<Exam> Exams { get; set; }
+        public DbSet<Question> Questions { get; set; }
         public DbSet<Exam_Question> Exam_Questions { get; set; }
+        public DbSet<ExamRequest> ExamRequests { get; set; }
         public DbSet<TakenExam> TakenExams { get; set; }
+        public DbSet<User> Users { get; set; }
+
 
 
 
@@ -49,35 +51,25 @@ namespace MultiLanguageExamManagementSystem.Data
 
 
             modelBuilder.Entity<Exam>()
-                .HasOne(e => e.Professor)
-                .WithMany()
-                .HasForeignKey(e => e.ProfessorId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .HasMany(e => e.Exam_Questions)
+                .WithOne(eq => eq.Exam)
+                .HasForeignKey(eq => eq.ExamId)
+                .OnDelete(DeleteBehavior.Cascade); 
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.Exam_Questions)
+                .WithOne(eq => eq.Question)
+                .HasForeignKey(eq => eq.QuestionId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Exam_Question>()
-                 .HasKey(eq => new { eq.ExamId, eq.QuestionId });
-
-            modelBuilder.Entity<Exam_Question>()
-                .HasOne(eq => eq.Exam)
-                .WithMany(e => e.Exam_Questions)
-                .HasForeignKey(eq => eq.ExamId);
-
-            modelBuilder.Entity<Exam_Question>()
-                .HasOne(eq => eq.Question)
-                .WithMany(q => q.Exam_Questions)
-                .HasForeignKey(eq => eq.QuestionId);
+                .HasKey(eq => new { eq.ExamId, eq.QuestionId });
 
             modelBuilder.Entity<TakenExam>()
-                .HasOne(te => te.User)
-                .WithMany()
-                .HasForeignKey(te => te.UserId)
-                .OnDelete(DeleteBehavior.Restrict);
+               .Property(te => te.UserId)
+               .IsRequired();
 
-            modelBuilder.Entity<TakenExam>()
-                .HasOne(te => te.Exam)
-                .WithMany()
-                .HasForeignKey(te => te.ExamId)
-                .OnDelete(DeleteBehavior.Restrict);
+           
         }
     }
-}
+    }
