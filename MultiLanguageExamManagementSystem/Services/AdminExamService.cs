@@ -37,6 +37,33 @@ namespace MultiLanguageExamManagementSystem.Services
         }
 
 
+        //only the professor who created the exam has the right to approve the request
+        public async Task ApproveExamRequestAsync(int examRequestId)
+        {
+            var professorId = _claimsPrincipalAccessor.ClaimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var examRequest = _unitOfWork.Repository<ExamRequest>().GetById(er => er.ExamRequestId == examRequestId).FirstOrDefault();
+
+            if (examRequest == null)
+            {
+                throw new Exception("Exam request not found.");
+            }
+
+            var exam = _unitOfWork.Repository<Exam>().GetById(e => e.ExamId == examRequest.ExamId).FirstOrDefault();
+
+            if (exam == null || exam.ProfessorId != professorId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to approve this exam request.");
+            }
+
+            examRequest.ApprovalTime = DateTime.Now;
+            examRequest.ProfessorId = professorId;
+            examRequest.Status = RequestStatus.Approved;
+
+            _unitOfWork.Repository<ExamRequest>().Update(examRequest);
+            _unitOfWork.Complete();
+        }
+
         #endregion
 
 

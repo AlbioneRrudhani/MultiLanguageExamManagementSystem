@@ -8,5 +8,6 @@ namespace MultiLanguageExamManagementSystem.Services.IServices
         Task CreateExamAsync(ExamCreateDto examToCreate);
         Task CreateQuestionsAsync(List<QuestionCreateDto> questionsToCreate);
         Task AssociateQuestionsWithExamAsync(int examId, List<int> questionIds);
+        Task ApproveExamRequestAsync(int examRequestId);
     }
 }

@@ -64,5 +64,23 @@ namespace MultiLanguageExamManagementSystem.Controllers
             return Ok(new { message = "Questions associated with exam successfully." });
         }
 
+
+        [HttpPost("approve-request")]
+        public async Task<IActionResult> ApproveExamRequestAsync(int examRequestId)
+        {
+            try
+            {
+                await _adminExamService.ApproveExamRequestAsync(examRequestId);
+                return Ok(new { message = "The exam request has been approved." });
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

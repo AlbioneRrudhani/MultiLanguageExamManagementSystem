@@ -35,7 +35,7 @@ builder.Services.Configure<Auth0Settings>(builder.Configuration.GetSection("Auth
 // Register HttpClient
 builder.Services.AddHttpClient<TranslationService>(); 
 
-//builder.Services.AddScoped<IExamService, ExamService>();
+builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IAdminExamService, AdminExamService>();
 builder.Services.AddScoped<ICultureService, CultureService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
