@@ -10,6 +10,7 @@ namespace MultiLanguageExamManagementSystem.Services.IServices
         Task RequestToTakeExamAsync(int examId);
         Task<List<ExamDto>> GetApprovedExamsForUserAsync();
         Task<List<QuestionDto>> GetExamQuestionsAsync(int examId);
+        Task<string> SubmitExamAsync(SubmitExamDto submitExamDto);
 
     }
 }

@@ -86,5 +86,14 @@ namespace MultiLanguageExamManagementSystem.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+
+        [HttpPost("submit-exam")]
+        [Authorize]
+        public async Task<ActionResult<int>> SubmitExam(SubmitExamDto submitExamDto)
+        {
+            var score = await _examService.SubmitExamAsync(submitExamDto);
+            return Ok(score);
+        }
     }
 }

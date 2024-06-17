@@ -15,12 +15,14 @@ namespace MultiLanguageExamManagementSystem.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IClaimsPrincipalAccessor _claimsPrincipalAccessor;
+        private readonly IEmailService _emailService;
 
-        public AdminExamService(IUnitOfWork unitOfWork, IMapper mapper, IClaimsPrincipalAccessor claimsPrincipalAccessor)
+        public AdminExamService(IUnitOfWork unitOfWork, IMapper mapper, IClaimsPrincipalAccessor claimsPrincipalAccessor, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _claimsPrincipalAccessor = claimsPrincipalAccessor;
+            _emailService = emailService;
         }
 
 

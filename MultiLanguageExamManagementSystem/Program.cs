@@ -40,6 +40,7 @@ builder.Services.AddScoped<IAdminExamService, AdminExamService>();
 builder.Services.AddScoped<ICultureService, CultureService>();
 builder.Services.AddScoped<ITranslationService, TranslationService>();
 builder.Services.AddScoped<IAuth0Service, Auth0Service>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddScoped<IClaimsPrincipalAccessor, ClaimsPrincipalAccessor>();
 

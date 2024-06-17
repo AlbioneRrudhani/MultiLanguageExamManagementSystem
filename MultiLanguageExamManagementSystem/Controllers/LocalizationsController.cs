@@ -8,6 +8,7 @@ namespace MultiLanguageExamManagementSystem.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+
     public class LocalizationsController : ControllerBase
     {
         private readonly ILogger<LocalizationsController> _logger;
@@ -89,6 +90,8 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
         #region Languages
 
+      
+
         [HttpPost("languages")]
         public async Task<IActionResult> AddLanguage(CreateLanguageDto languageToCreate)
         {
@@ -98,6 +101,7 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
 
         [HttpGet("languages/{id}")]
+        [Authorize]
         public async Task<IActionResult> GetLanguageById(int id)
         {
             var language = await _cultureService.GetLanguage(id);
@@ -119,7 +123,7 @@ namespace MultiLanguageExamManagementSystem.Controllers
 
 
         [HttpGet("languagesListView")]
-        [Authorize(Policy = "Professor")]
+        [Authorize]
         public async Task<IActionResult> LanguagesListView(string? searchText, int page = 1, int pageSize = 10)
         {
             var languages = await _cultureService.LanguagesListView(searchText, page, pageSize);
